@@ -25,11 +25,7 @@ app.use('/uploads', express.static(__dirname + '/public/uploads'));
 
 app.use("/api/auth", require("./routers/auth")) 
 app.use("/api/user", require("./routers/user"))
-app.use("/api/article", require("./routers/article"))
-app.use("/api/commonQuestion", require("./routers/commonQuestion"))
-app.use("/api/massage", require("./routers/massage"))
 app.use("/api/product", require("./routers/product"))
-app.use("/api/recommendation", require("./routers/recommendation"))
 app.use("/api/order", require("./routers/order"))
 
 

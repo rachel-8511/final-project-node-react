@@ -7,8 +7,12 @@ const getAllProduct = async (req, res) => {
     }
     res.json(Products)
 }
+
 const getProductById = async (req, res) => {
     const { id } = req.params
+    if (!id) {
+        return res.status(400).json({ message: 'Field missing!' })
+    }
     const product = await Product.findById(id).lean()
     if (!product) {
         return res.status(400).json({ message: 'No product found' })
@@ -17,44 +21,44 @@ const getProductById = async (req, res) => {
 }
 
 const createNewProduct = async (req, res) => {
-    const { name,description,price,quantity } = req.body
-    if (!name || !price|| !req.files) {
-        return res.status(400).json({ message: 'No parameters' })
-    } 
-    let imageURL=[]
+    const { name, description, price, quantity } = req.body
+    if (!name || !price || !req.files) {
+        return res.status(400).json({ message: 'Field missing!' })
+    }
+    let imageURL = []
     req.files.forEach(element => {
         imageURL.push(element.path)
     });
-   
-    const product = await Product.create({ name,imageURL,description,price,quantity})
+
+    const product = await Product.create({ name, imageURL, description, price, quantity })
     if (product) {
         return res.status(201).json(product)
     }
-    else { 
+    else {
         return res.status(400).json({ message: 'Invalid Product ' })
     }
 
 }
- 
- 
+
+
 const updateProduct = async (req, res) => {
-    const { _id,name,description,price,quantity} = req.body
+    const { _id, name, description, price, quantity } = req.body
     if (!_id || !name || !price) {
-        return res.status(400).json({ message: 'fields are required' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
     const product = await Product.findById(_id).exec()
     if (!product) {
         return res.status(400).json({ message: 'Product not found' })
     }
-    let imageURL=[]
+    let imageURL = []
     req.files?.forEach(element => {
         imageURL.push(element.path)
     });
-    product.name=name
-    product.imageURL=imageURL.length>0?imageURL: product.imageURL;
-    product.description=description
-    product.price=price
-    product.quantity=quantity
+    product.name = name
+    product.imageURL = imageURL.length > 0 ? imageURL : product.imageURL;
+    product.description = description
+    product.price = price
+    product.quantity = quantity
 
     const updatedProduct = await product.save()
     res.json(updatedProduct)
@@ -62,7 +66,9 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     const { _id } = req.body
-   
+    if (!_id) {
+        return res.status(400).json({ message: 'Field missing!' })
+    }
     const product = await Product.findById(_id).exec()
     if (!product) {
         return res.status(400).json({ message: 'Product not found' })
@@ -71,4 +77,4 @@ const deleteProduct = async (req, res) => {
     res.json(result)
 }
 
-module.exports = { getAllProduct, createNewProduct, updateProduct, deleteProduct,getProductById}
+module.exports = { getAllProduct, createNewProduct, updateProduct, deleteProduct, getProductById }

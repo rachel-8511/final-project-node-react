@@ -16,11 +16,5 @@ router.put("/updateBasket", userController.updateBasket)
 router.use(verifyAdmin)
 router.get("/", userController.getAllUsers)
 
-// router.get("/:id",userController.getUserById)
-// router.post("/",userController.createNewUser)
-// router.delete("/",userController.deleteUser)
-
-
-
 
 module.exports = router

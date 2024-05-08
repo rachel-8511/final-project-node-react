@@ -2,31 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import { classNames } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-// import { ProductService } from './service/ProductService';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { FileUpload } from 'primereact/fileupload';
-import { Rating } from 'primereact/rating';
 import { Toolbar } from 'primereact/toolbar';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { RadioButton } from 'primereact/radiobutton';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Tag } from 'primereact/tag';
-
 import { useAddProductItemMutation, useDeleteProductItemMutation, useGetProductsQuery, useUpdateProductItemMutation } from './productsApiSlice';
-import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import Search from '../../Components/Search';
+import IsLoading from '../../Components/IsLoading';
 
 const AdminProducts = () => {
     const [searchParams]=useSearchParams()
     const search =searchParams.get("search")
-    const { data, isSuccess, error } = useGetProductsQuery()
-    const [addProduct, { isLoading, isError, isSuccess: is, data: addProductdData }] = useAddProductItemMutation()
+    const {isLoading, data, isSuccess} = useGetProductsQuery()
+    const [addProduct, {  isSuccess: is, data: addProductdData }] = useAddProductItemMutation()
     const [updateProduct, { isSuccess: updateIsSuccess, data: updateProductdData }] = useUpdateProductItemMutation()
-    const [deleteProductItem, { isSuccess: deleteIsSuccess, data: deleteProductdData }] = useDeleteProductItemMutation()
+    const [deleteProductItem, { isSuccess: deleteIsSuccess}] = useDeleteProductItemMutation()
 
     let emptyProduct = {
         _id: null,
@@ -39,8 +34,6 @@ const AdminProducts = () => {
         rating: 0,
         inventoryStatus: 'INSTOCK'
     };
-    const navigate = useNavigate()
-
     const [products, setProducts] = useState(null);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -106,6 +99,7 @@ const AdminProducts = () => {
             setProduct(emptyProduct);
         }
     }, [deleteIsSuccess]);
+    if (isLoading ) return <IsLoading/>;
 
     const saveProduct = () => {
         if (isAdd) {
@@ -128,7 +122,7 @@ const AdminProducts = () => {
         if (isUpdate) {
 
             setSubmitted(true);
-            if (product.name.trim() && product.price && selectedFile) {
+            if (product.name.trim() && product.price) {
                 const formData = new FormData();
                 formData.append('_id',product._id);
                 formData.append('name', product.name);
@@ -183,9 +177,6 @@ const AdminProducts = () => {
         toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
     };
 
-
-
-
     const exportCSV = () => {
         dt.current.exportCSV();
     };
@@ -221,24 +212,16 @@ const AdminProducts = () => {
     };
 
     const imageBodyTemplate = (rowData) => {
-        
         if (rowData.imageURL)
             return <img src={"http://localhost:1234/uploads/" + rowData.imageURL[0].split("\\")[2]} alt={rowData.image} className="shadow-2 border-round" style={{ width: '80px' }} />;
     };
-
-
 
     const priceBodyTemplate = (rowData) => {
         return formatCurrency(rowData.price);
     };
 
-    const ratingBodyTemplate = (rowData) => {
-        return <Rating value={rowData.rating} readOnly cancel={false} />;
-    };
-
     const statusBodyTemplate = (rowData) => {
         return <Tag value={getStatus(rowData)} severity={getSeverity(rowData)}></Tag>;
-
     };
 
     const actionBodyTemplate = (rowData) => {
@@ -298,29 +281,27 @@ const AdminProducts = () => {
 
 
     return (
-        <div>
+        <>
+         <br></br>
+        <div className="card" style={{marginTop:"100px"}}>
+
             <Toast ref={toast} />
             <div className="card">
                 <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
-
                 <DataTable ref={dt} value={products} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
                     dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products" globalFilter={globalFilter} header={header}>
-                    <Column field="name" header="Name" sortable style={{ minWidth: '10rem' }}></Column>
-                    <Column field="description" header="Description" sortable style={{ maxWidth: '12rem' }}></Column>
-                    <Column field="imageURL" header="Image" body={imageBodyTemplate}></Column>
+                    <Column field="name" header="Name" sortable style={{ minWidth: '10rem',maxWidth:'10rem' }}></Column>
+                    <Column field="description" header="Description" sortable style={{ minWidth:'17rem',maxWidth: '17rem' }}></Column>                    <Column field="imageURL" header="Image" body={imageBodyTemplate}></Column>
                     <Column field="price" header="Price" body={priceBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
                     <Column field="quantity" header="Quantity" sortable style={{ minWidth: '10rem' }}></Column>
-                    {/* <Column field="rating" header="Reviews" body={ratingBodyTemplate} sortable style={{ minWidth: '12rem' }}></Column> */}
                     <Column field="inventoryStatus" header="Status" body={statusBodyTemplate} style={{ minWidth: '12rem' }}></Column>
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '12rem' }}></Column>
                 </DataTable>
             </div>
 
             <Dialog visible={productDialog} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Product Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-              
-                {/* {product.imageURL && <img src={'http://localhost:1234/upload/' + product.imageURL} alt={product.imageURL} className="product-image block m-auto pb-3" />} */}
                 <div className="field">
                     <label htmlFor="name" className="font-bold">
                         Name
@@ -336,10 +317,8 @@ const AdminProducts = () => {
                     <InputTextarea id="description" value={product.description} onChange={(e) => onInputChange(e, 'description')} required rows={3} cols={20} />
                 </div>
 
-
-
               <input type="file" name="imageURL" multiple onChange={handleFileChange} />
-              {submitted && !selectedFile && <small className="p-error">Image is required.</small>}
+              {submitted && isAdd && !selectedFile && <small className="p-error">Image is required.</small>}
 
                 <div className="formgrid grid">
                     <div className="field col">
@@ -369,8 +348,8 @@ const AdminProducts = () => {
                 </div>
             </Dialog>
 
-
         </div>
+        </>
     );
 }
 export default AdminProducts

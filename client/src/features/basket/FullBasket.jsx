@@ -1,8 +1,7 @@
 import { useGetProductsQuery } from "../products/productsApiSlice"
 import React, { useState, useEffect } from 'react';
 import { Button } from 'primereact/button';
-import { DataView, DataViewLayoutOptions } from 'primereact/dataview';
-import { Rating } from 'primereact/rating';
+import { DataView } from 'primereact/dataview';
 import { Tag } from 'primereact/tag';
 import { classNames } from 'primereact/utils';
 import { useNavigate } from 'react-router-dom';
@@ -12,12 +11,10 @@ import { Divider } from 'primereact/divider';
 import useAuth from "../../hooks/useAuth";
 import { useDispatch } from "react-redux";
 import { setToken } from "../auth/authSlice";
+import IsLoading from "../../Components/IsLoading";
 
 
-const FullBasket = () => {
-
-    const [layout, setLayout] = useState('grid');
-
+const FullBasket = ({setToCheckout}) => {
     let user = useAuth()
     let basket = localStorage.getItem('token') ?
         user.basket :
@@ -27,36 +24,31 @@ const FullBasket = () => {
         localStorage.setItem("basket", JSON.stringify({ products: [], payment: 0 }))
         basket = { products: [], payment: 0 }
     }
-    const [products, setProducts] = useState([]);
-    const [singleProduct,setSingleProduct]=useState(null)
-    const { data: allproducts, isLoading, isSuccess, isError, error } = useGetProductsQuery()
+    const [singleProduct, setSingleProduct] = useState(null)
+    const { data: allproducts, isLoading, isSuccess} = useGetProductsQuery()
     const [deleteProduct, { data: dt, isSuccess: deleteProductIsSuccess }] = useDeleteProductMutation()
-    const [updateProductQuantity, { data, isSuccess: updateProductQuantityIsuccess}] = useUpdateProductQuantityMutation()
+    const [updateProductQuantity, { data, isSuccess: updateProductQuantityIsuccess }] = useUpdateProductQuantityMutation()
 
-    //if (isError) return <h2>{error}</h2>
 
     const navigate = useNavigate()
     const [value, setValue] = useState(null);
     const dispatch = useDispatch()
+    const full_basket = basket.products?.map((p) => { return ({ product: allproducts?.find(pr => pr._id === p.product_id), quantity: p.quantity }) })
 
     useEffect(() => {
         if (isSuccess) {
-            const full_basket = basket.products?.map((p) => { return ({ product: allproducts?.find(pr => pr._id === p.product_id), quantity: p.quantity }) })
-            setProducts(full_basket)
         }
         if (deleteProductIsSuccess) {
             dispatch(setToken(dt))
-            let _products = products.filter((val) => val.product._id !== singleProduct.product._id);
-            setProducts(_products);
         }
 
         if (updateProductQuantityIsuccess) {
             dispatch(setToken(data))
-           
         }
 
     }, [isSuccess, deleteProductIsSuccess, updateProductQuantityIsuccess]);
 
+    if (isLoading ) return <IsLoading/>;
 
     const getSeverity = (product) => {
         if (product.quantity >= 100)
@@ -90,58 +82,55 @@ const FullBasket = () => {
             deleteProduct({ _id: user._id, product_id: product.product._id })
         }
         else {
-            
+
             const basket = JSON.parse(localStorage.getItem("basket"))
             localStorage.setItem("basket", JSON.stringify({
                 products: basket.products.filter(p => p.product_id !== product.product._id),
                 payment: basket.payment - product.quantity * product.product.price
             }))
-            let _products = products.filter((val) => val.product._id !== product.product._id);
-            setProducts(_products);
         }
     }
-const updateBasketProductQuantity= (e,product)=>{
-   
+    const updateBasketProductQuantity = (e, product) => {
 
-    if (e.value === 0) {
-        setValue(e.value)
-        setSingleProduct(product)
-        deleteProductFromBasket(product)
-     }
-     else {
-         if (localStorage.getItem("token")) {
-             updateProductQuantity({ _id: user._id, product_id: product.product._id, quantity: e.value })
-             setValue(e.value)
-            }
-         else {
+
+        if (e.value === 0) {
             setValue(e.value)
-             let basket = JSON.parse(localStorage.getItem("basket"))
+            setSingleProduct(product)
+            deleteProductFromBasket(product)
+        }
+        else {
+            if (localStorage.getItem("token")) {
+                updateProductQuantity({ _id: user._id, product_id: product.product._id, quantity: e.value })
+                setValue(e.value)
+            }
+            else {
+                setValue(e.value)
+                let basket = JSON.parse(localStorage.getItem("basket"))
 
-             const products = basket.products.map(p => {
-                 if (p.product_id === product.product._id) {
-                     basket.payment=basket.payment + (e.value - p.quantity) * product.product.price
-                     p.quantity =e.value
-                 }
-                 return p;
-             })
-             
-             localStorage.setItem("basket", JSON.stringify({
-                 products: products,
-                 payment: basket.payment
-             }))
-         }
-     }
-}
+                const products = basket.products.map(p => {
+                    if (p.product_id === product.product._id) {
+                        basket.payment = basket.payment + (e.value - p.quantity) * product.product.price
+                        p.quantity = e.value
+                    }
+                    return p;
+                })
+
+                localStorage.setItem("basket", JSON.stringify({
+                    products: products,
+                    payment: basket.payment
+                }))
+            }
+        }
+    }
     const listItem = (product, index) => {
         return (
             <div className="col-12" key={product._id}>
                 <div className={classNames('flex flex-column xl:flex-row xl:align-items-start p-4 gap-4', { 'border-top-1 surface-border': index !== 0 })}>
-                    <img className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" src={'a.png'} alt={product.name} />
+                <img src={"http://localhost:1234/uploads/" + product.product.imageURL[0].split("\\")[2]} alt={product.product.name} className="w-6rem shadow-2 border-round" />
                     <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
                         <div className="flex flex-column align-items-center sm:align-items-start gap-3">
                             <div className="text-2xl font-bold text-900">{product.product.name}</div>
                             <div className="text-2xl font-bold text-900">{product.quantity}</div>
-                            {/* <Rating value={product.rating} readOnly cancel={false}></Rating> */}
                             <div className="flex align-items-center gap-3">
                                 <span className="flex align-items-center gap-2">
                                     <i className="pi pi-tag"></i>
@@ -158,8 +147,8 @@ const updateBasketProductQuantity= (e,product)=>{
 
                             <div className="flex-auto">
                                 <InputNumber inputId="minmax-buttons" value={product.quantity}
-                                    onChange={(e) => { updateBasketProductQuantity(e,product) }}
-                                    mode="decimal" showButtons min={0} max={100} />
+                                    onChange={(e) => { updateBasketProductQuantity(e, product) }}
+                                    mode="decimal" showButtons min={0} max={product.quantity} />
                             </div>
 
                         </div>
@@ -175,22 +164,13 @@ const updateBasketProductQuantity= (e,product)=>{
         }
 
         if (layout === 'list') return listItem(product, index);
-        // else if (layout === 'grid') return gridItem(product);
     };
 
     const listTemplate = (products, layout) => {
         return <div className="grid grid-nogutter">{products.map((product, index) => itemTemplate(product, layout, index))}</div>;
     };
 
-    const header = () => {
-        return (
-            <div className="flex justify-content-end">
-                <DataViewLayoutOptions layout={layout} onChange={(e) => setLayout(e.value)} />
 
-            </div>
-
-        );
-    };
 
 
     const checkUser = () => {
@@ -198,29 +178,40 @@ const updateBasketProductQuantity= (e,product)=>{
             navigate('/checkout')
         }
         else {
+            setToCheckout(true)
             navigate('/login')
         }
     }
 
 
     return (
+        <>
+            <br></br>
+            <div style={{ marginTop: '100px' }}>
+                {basket.products.length === 0 ?
+                    <>
+                        <br></br><br></br><br></br>
+                        <img className=" xl:w-15rem  xl:block mx-auto" src={'emptyCart.png'} alt={'emptyCart'} style={{ marginTop: '100px' }} />
+                        <h2 style={{ textAlign: 'center' }}>Oups! Your cart is empty</h2>
 
-        <div className="card"> <h1>Basket: </h1>
-            {basket.products.length===0?<h1>😐 the basket is empty 😐</h1>:
-           
-            <div className="flex flex-column md:flex-row">
-                <p className="flex flex-column md:flex-row">
-
-                    <DataView value={products} listTemplate={listTemplate} header={null} />
-                </p>
-                <Divider layout="vertical" className="hidden md:flex"> </Divider>
-
-                <p>
-                    <h3>{`₪${basket.payment} לתשלום`}</h3>
-                    <Button onClick={() => checkUser()}>להזמנה</Button>
-                </p>
-            </div>}
-        </div>
+                    </> :
+                    <>
+                        <h1 style={{ textAlign: 'center' }} >Basket:</h1>
+                        <div className="card">
+                            <div className="flex flex-column md:flex-row" >
+                                <p className="flex flex-column md:flex-row" style={{ minWidth: '75%' }}>
+                                    <DataView value={full_basket} listTemplate={listTemplate} header={null} />
+                                </p>
+                                <Divider layout="vertical" className="hidden md:flex"> </Divider>
+                                <p style={{ minWidth: '25%', textAlign: "center" }}>
+                                    <h3>{`₪${basket.payment} לתשלום`}</h3>
+                                    <Button onClick={() => checkUser()} style={{ backgroundColor: '#C08F48', border: 'black' }}>להזמנה</Button>
+                                </p>
+                            </div>
+                        </div></>
+                }
+            </div>
+        </>
     )
 }
 

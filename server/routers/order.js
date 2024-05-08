@@ -16,6 +16,4 @@ router.use(verifyAdmin)
 router.put("/",orderController.updateOrder)
 router.get("/",orderController.getAllOrder)
 
-// router.delete("/",orderController.deleteOrder)
-
 module.exports = router

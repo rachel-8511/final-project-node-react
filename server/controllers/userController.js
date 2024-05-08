@@ -40,7 +40,7 @@ const createNewUser = async (req, res) => {
 const updateBasket = async (req, res) => {
     const basket = req.body
     if (!basket) {
-        return res.status(400).json({ message: 'fields are required' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
     const user = await Users.findById(req.user._id).exec()
     if (!user) {
@@ -67,6 +67,9 @@ const updateBasket = async (req, res) => {
  
 const getUserById = async (req, res) => {
     const { id } = req.params
+    if (!id) {
+        return res.status(400).json({ message: 'Field missing!' })
+    }
     const user = await Users.findById(id).lean()
     if (!user) {
         return res.status(400).json({ message: 'No user found' })
@@ -77,14 +80,9 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     const { _id, password, firstName, lastName, phone, user_id, roles, active } = req.body
     if (!_id || !firstName || !lastName) {
-        return res.status(400).json({ message: 'fields are required' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
     const user = await Users.findById(_id).exec()
-    // if (user.email != email) {
-    //     if (await Users.find({ email: email }).exec()) {
-    //         return res.status(400).json({ message: 'roles not valid' })
-    //     }
-    // }
     if (roles) {
         if (!["user", "admin"].find(r => r === roles)) {
             return res.status(400).json({ message: 'roles not valid' })
@@ -105,7 +103,6 @@ const updateUser = async (req, res) => {
     user.lastName = lastName
     user.phone = phone
     user.user_id = user_id
-
 
     const updatedUser = await user.save()
 
@@ -129,7 +126,7 @@ const addProduct = async (req, res) => {
     const { _id, product_id, quantity, imageURL, description } = req.body
 
     if (!_id || !product_id || !quantity || !description) {
-        return res.status(400).json({ message: 'fields are required' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
     const user = await Users.findById(_id).exec()
 
@@ -144,14 +141,14 @@ const addProduct = async (req, res) => {
     if (product.quantity < quantity) {
         return res.status(400).json({ message: 'Product`s quantity is not enough' })
     }
-    const f = (user.basket.products).find(p => {
+    const checkIfExist = (user.basket.products).find(p => {
         if (p.product_id == product_id) {
             p.quantity = p.quantity + quantity
         }
         return (p.product_id == product_id)
     })
 
-    if (f == undefined) {
+    if (checkIfExist == undefined) {
         user.basket.products = [...user.basket.products, { product_id: product_id, quantity: quantity, imageURL: imageURL, description: description }]
     }
     user.basket.payment = user.basket.payment + product.price * quantity
@@ -175,11 +172,11 @@ const addProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     const { _id, product_id } = req.body
     if (!_id || !product_id) {
-        return res.status(400).json({ message: 'No parameters' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
     const user = await Users.findById(_id).exec()
     if (!user) {
-        return res.status(400).json({ message: 'UserHM not found' })
+        return res.status(400).json({ message: 'User not found' })
     }
 
     const product = await Products.findById(product_id).exec()
@@ -215,7 +212,7 @@ const deleteProduct = async (req, res) => {
 const updateProductQuantity = async (req, res) => {
     const { _id, product_id, quantity } = req.body
     if (!_id || !product_id || !quantity) {
-        return res.status(400).json({ message: 'No parameters' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
     const user = await Users.findById(_id).exec()
     if (!user) {
@@ -258,7 +255,7 @@ const addDefaultAddress = async (req, res) => {
     const { _id, firstName, lastName, city, street, houseNumber, apartment, postalCode, phone } = req.body
 
     if (!_id || !firstName || !lastName || !city || !street || !houseNumber || !postalCode || !phone) {
-        return res.status(400).json({ message: 'fields are required' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
 
     const user = await Users.findById(_id).exec()
@@ -289,7 +286,7 @@ const cleaningBasket = async (req, res) => {
     const { _id } = req.body
 
     if (!_id) {
-        return res.status(400).json({ message: 'fields are required' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
 
     const user = await Users.findById(_id).exec()

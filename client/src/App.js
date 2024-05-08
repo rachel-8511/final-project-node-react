@@ -23,17 +23,18 @@ import { useState } from 'react';
 function App() {
 
   const [visibleRight, setVisibleRight] = useState(false);
+  const [toCheckout, setToCheckout] = useState(false);
   return (
     <>
       <NavBar setVisibleRight={setVisibleRight} visibleRight={visibleRight}/>
-      {console.log(visibleRight)}
+
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login />} />
+        <Route path='/login' element={<Login setToCheckout={setToCheckout} toCheckout={toCheckout}/>} />
         <Route path='/products' element={<Products />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/product/:id' element={<Product />} />
-        <Route path='/basket' element={<FullBasket />} />
+        <Route path='/product/:id' element={<Product setVisibleRight={setVisibleRight} />} />
+        <Route path='/basket' element={<FullBasket setToCheckout={setToCheckout} />} />
 
         <Route element={<RequireAuth allowRoles={["admin", "user"]} />}>
           <Route path='/update' element={<Update />} />

@@ -1,10 +1,7 @@
 const Order = require("../models/Order")
 const Product = require("../models/Product")
 
-
-
 const getAllOrder = async (req, res) => {
-
     let Orders = {}
         Orders = await Order.find({
             status:{$in:["Ordered","In Process","Shipped"]}
@@ -25,11 +22,10 @@ const getOrdersById = async (req, res) => {
 }
 
 const createNewOrder = async (req, res) => {
-
     const { address } = req.body
 
     if (!address) {
-        return res.status(400).json({ message: 'No parameters' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
 
     const order = await Order.create({ customer_id: req.user._id, products: req.user.basket.products, payment: req.user.basket.payment, address })
@@ -42,14 +38,13 @@ const createNewOrder = async (req, res) => {
                 return res.status(400).json({ message: 'Product not found' })
             }
 
-
             product.quantity = product.quantity - p.quantity;
             const updatedOrder = await product.save()
         })
         return res.status(201).json({ message: 'New Order created' })
     }
     else {
-        return res.status(400).json({ message: 'Invalid Order ' })
+        return res.status(400).json({ message: 'Invalid Order' })
     }
 
 }
@@ -58,7 +53,7 @@ const createNewOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
     const { _id, status } = req.body
     if (!_id || !status) {
-        return res.status(400).json({ message: 'fields are required' })
+        return res.status(400).json({ message: 'Field missing!' })
     }
 
     const order = await Order.findById(_id).exec()
