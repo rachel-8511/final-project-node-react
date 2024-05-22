@@ -10,7 +10,7 @@ const basketApiSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: data
             }),
-            //  invalidatesTags: ["user"]
+             invalidatesTags: ["user"]
         }),
 
         deleteProduct: build.mutation({
@@ -19,7 +19,6 @@ const basketApiSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: { _id: _id, product_id: product_id }
             })
-            // invalidatesTags: ["products"]
         }),
         updateProductQuantity: build.mutation({
             query: ({ _id, product_id,quantity }) => ({
@@ -27,7 +26,6 @@ const basketApiSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: { _id: _id, product_id: product_id,quantity:quantity }
             })
-            // invalidatesTags: ["products"]
         }),
     })
 })

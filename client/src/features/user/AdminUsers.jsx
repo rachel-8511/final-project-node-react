@@ -162,7 +162,7 @@ const AdminUsers = () => {
                     <Toolbar className="mb-4" right={rightToolbarTemplate}></Toolbar>
 
                     <DataTable ref={dt} value={users} selection={selectedUsers} onSelectionChange={(e) => setSelectedUsers(e.value)}
-                        dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                        dataKey="_id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users" globalFilter={globalFilter} header={header}>
                         <Column field="firstName" header="FirstName" sortable style={{ minWidth: '10rem' }}></Column>

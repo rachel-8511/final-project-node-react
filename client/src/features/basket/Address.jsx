@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useFormik } from 'formik';
 import { Button } from 'primereact/button';
 import { classNames } from 'primereact/utils';
@@ -14,14 +14,14 @@ const Address = () => {
     const user = useAuth()
     const [checked, setChecked] = useState(false);
     const [submit, setSubmit] = useState(false);
-    const [AddDefaultAddress, { isSuccess, isError, error, data }] = useAddDefaultAddressMutation()
+    const [AddDefaultAddress, { isSuccess,  data }] = useAddDefaultAddressMutation()
     const dispatch = useDispatch()
 
     useEffect(() => {
         if (isSuccess) {
             dispatch(setToken(data))
         }
-    }, [isSuccess])
+    }, [isSuccess,data,dispatch])
    
     const formik = useFormik({
         initialValues: {

@@ -1,5 +1,5 @@
 import { useGetProductsQuery } from "../products/productsApiSlice"
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import { DataView } from 'primereact/dataview';
 import { Tag } from 'primereact/tag';
@@ -14,7 +14,7 @@ import { setToken } from "../auth/authSlice";
 import IsLoading from "../../Components/IsLoading";
 
 
-const FullBasket = ({setToCheckout}) => {
+const FullBasket = ({ setToCheckout }) => {
     let user = useAuth()
     let basket = localStorage.getItem('token') ?
         user.basket :
@@ -24,31 +24,30 @@ const FullBasket = ({setToCheckout}) => {
         localStorage.setItem("basket", JSON.stringify({ products: [], payment: 0 }))
         basket = { products: [], payment: 0 }
     }
-    const [singleProduct, setSingleProduct] = useState(null)
-    const { data: allproducts, isLoading, isSuccess} = useGetProductsQuery()
+    const { data: allproducts, isLoading, isSuccess } = useGetProductsQuery()
     const [deleteProduct, { data: dt, isSuccess: deleteProductIsSuccess }] = useDeleteProductMutation()
     const [updateProductQuantity, { data, isSuccess: updateProductQuantityIsuccess }] = useUpdateProductQuantityMutation()
-
+    const [a,seta]=useState(false)
 
     const navigate = useNavigate()
-    const [value, setValue] = useState(null);
     const dispatch = useDispatch()
     const full_basket = basket.products?.map((p) => { return ({ product: allproducts?.find(pr => pr._id === p.product_id), quantity: p.quantity }) })
 
     useEffect(() => {
         if (isSuccess) {
         }
-        if (deleteProductIsSuccess) {
-            dispatch(setToken(dt))
-        }
-
         if (updateProductQuantityIsuccess) {
             dispatch(setToken(data))
         }
+        if (deleteProductIsSuccess) {
+           dispatch(setToken(dt))
+        }
 
-    }, [isSuccess, deleteProductIsSuccess, updateProductQuantityIsuccess]);
+       
 
-    if (isLoading ) return <IsLoading/>;
+    }, [isSuccess, deleteProductIsSuccess, updateProductQuantityIsuccess, data, dt, dispatch, full_basket]);
+
+    if (isLoading) return <IsLoading />;
 
     const getSeverity = (product) => {
         if (product.quantity >= 100)
@@ -78,7 +77,6 @@ const FullBasket = ({setToCheckout}) => {
     };
     const deleteProductFromBasket = (product) => {
         if (localStorage.getItem("token")) {
-            setSingleProduct(product)
             deleteProduct({ _id: user._id, product_id: product.product._id })
         }
         else {
@@ -89,22 +87,19 @@ const FullBasket = ({setToCheckout}) => {
                 payment: basket.payment - product.quantity * product.product.price
             }))
         }
+        navigate("/basket")
+
     }
     const updateBasketProductQuantity = (e, product) => {
 
-
         if (e.value === 0) {
-            setValue(e.value)
-            setSingleProduct(product)
             deleteProductFromBasket(product)
         }
         else {
             if (localStorage.getItem("token")) {
                 updateProductQuantity({ _id: user._id, product_id: product.product._id, quantity: e.value })
-                setValue(e.value)
             }
             else {
-                setValue(e.value)
                 let basket = JSON.parse(localStorage.getItem("basket"))
 
                 const products = basket.products.map(p => {
@@ -121,12 +116,14 @@ const FullBasket = ({setToCheckout}) => {
                 }))
             }
         }
+        navigate("/basket")
+
     }
     const listItem = (product, index) => {
         return (
-            <div className="col-12" key={product._id}>
+            <div className="col-12" key={product.product._id}>
                 <div className={classNames('flex flex-column xl:flex-row xl:align-items-start p-4 gap-4', { 'border-top-1 surface-border': index !== 0 })}>
-                <img src={"http://localhost:1234/uploads/" + product.product.imageURL[0].split("\\")[2]} alt={product.product.name} className="w-6rem shadow-2 border-round" />
+                    <img src={"http://localhost:1234/uploads/" + product.product.imageURL[0].split("\\")[2]} alt={product.product.name} className="w-6rem shadow-2 border-round" />
                     <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
                         <div className="flex flex-column align-items-center sm:align-items-start gap-3">
                             <div className="text-2xl font-bold text-900">{product.product.name}</div>
@@ -148,7 +145,7 @@ const FullBasket = ({setToCheckout}) => {
                             <div className="flex-auto">
                                 <InputNumber inputId="minmax-buttons" value={product.quantity}
                                     onChange={(e) => { updateBasketProductQuantity(e, product) }}
-                                    mode="decimal" showButtons min={0} max={product.quantity} />
+                                    mode="decimal" showButtons min={0} max={product.product.quantity} />
                             </div>
 
                         </div>
@@ -199,14 +196,14 @@ const FullBasket = ({setToCheckout}) => {
                         <h1 style={{ textAlign: 'center' }} >Basket:</h1>
                         <div className="card">
                             <div className="flex flex-column md:flex-row" >
-                                <p className="flex flex-column md:flex-row" style={{ minWidth: '75%' }}>
+                                <div className="flex flex-column md:flex-row" style={{ minWidth: '75%' }}>
                                     <DataView value={full_basket} listTemplate={listTemplate} header={null} />
-                                </p>
+                                </div>
                                 <Divider layout="vertical" className="hidden md:flex"> </Divider>
-                                <p style={{ minWidth: '25%', textAlign: "center" }}>
+                                <div style={{ minWidth: '25%', textAlign: "center" }}>
                                     <h3>{`₪${basket.payment} לתשלום`}</h3>
                                     <Button onClick={() => checkUser()} style={{ backgroundColor: '#C08F48', border: 'black' }}>להזמנה</Button>
-                                </p>
+                                </div>
                             </div>
                         </div></>
                 }

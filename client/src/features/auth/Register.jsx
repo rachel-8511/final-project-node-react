@@ -6,20 +6,19 @@ import { classNames } from 'primereact/utils';
 import { AutoComplete } from "primereact/autocomplete";
 import { useRegisterMutation } from "./authApiSlice";
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Error from "../../Components/Error";
 
 const Register = () => {
 
-    const [registerFunc, { isError, isSuccess, data, error }] = useRegisterMutation()
+    const [registerFunc, { isError, isSuccess, error }] = useRegisterMutation()
     const navigate = useNavigate()
 
     useEffect(() => {
         if (isSuccess) {
             navigate("/login")
         }
-    }, [isSuccess])
+    }, [isSuccess,navigate])
 
     const formik = useFormik({
         initialValues: {

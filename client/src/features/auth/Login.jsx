@@ -6,7 +6,7 @@ import { useLoginMutation } from "./authApiSlice";
 import { useNavigate } from "react-router-dom";
 import { setToken } from "./authSlice";
 import { useDispatch } from "react-redux";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
 import { Link } from 'react-router-dom';
@@ -35,7 +35,7 @@ export default function LoginDemo({ setToCheckout, toCheckout }) {
             }
 
         }
-    }, [isSuccess])
+    }, [isSuccess,data,dispatch,navigate,updateBasket])
 
     useEffect(() => {
         if (updateBasketIsSuccess) {
@@ -51,7 +51,7 @@ export default function LoginDemo({ setToCheckout, toCheckout }) {
 
         }
 
-    }, [updateBasketIsSuccess])
+    }, [updateBasketIsSuccess,dispatch, navigate, setToCheckout, toCheckout, updateBasketData])
 
 
     const formik = useFormik({

@@ -95,7 +95,8 @@ export default function NavBar({ visibleRight, setVisibleRight}) {
     const items = isAdmin ? adminItems : isUser ? userItems : simpleUserItems
     return (
         <>
-            <div style={{ backgroundColor: '#C08F48', opacity: '0.9', padding: '5px', position: 'fixed', width: '95%', left: '2.5%', zIndex: '100' }}>                <Menubar model={items} start={start} end={isAdmin ? null : end} />
+            <div style={{ backgroundColor: '#C08F48', opacity: '0.9', padding: '5px', position: 'fixed', width: '95%', left: '2.5%', zIndex: '100' }}>  
+                          <Menubar model={items} start={start} end={isAdmin ? null : end} />
             </div>
             {!isAdmin ? <Basket setVisibleRight={setVisibleRight} visibleRight={visibleRight}/> : <></>}
         </>

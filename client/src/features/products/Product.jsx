@@ -42,7 +42,7 @@ const Product = ({setVisibleRight}) => {
             dispath(setToken(data))
             setVisibleRight(true)  
               }
-    }, [addProductIsSuccess]);
+    }, [addProductIsSuccess,data, dispath,setVisibleRight]);
 
     if (isLoading ) return <IsLoading/>;
 
@@ -63,7 +63,7 @@ const Product = ({setVisibleRight}) => {
 
             if (basket) {
                 const basket = JSON.parse(localStorage.getItem("basket"))
-                const productFind = basket.products.find(p => p.product_id == product._id)
+                const productFind = basket.products.find(p => p.product_id === product._id)
                 if (!productFind) {
                     basket.products.push({ product_id: product._id, quantity: value, imageURL: product.imageURL[0], description: `${product.name}, ${product.description}, ${product.price}` })
                     localStorage.setItem("basket", JSON.stringify({

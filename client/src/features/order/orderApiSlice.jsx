@@ -21,7 +21,6 @@ const orderApiSlice = apiSlice.injectEndpoints({
                 method: "POST",
                 body: data
             }),
-            //  invalidatesTags: ["user"]
         }),
         updateOrder: build.mutation({
             query: (data) => ({
@@ -29,7 +28,6 @@ const orderApiSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: data
             }),
-            //  invalidatesTags: ["user"]
         })
     })
 })

@@ -27,7 +27,7 @@ const Update = () => {
             navigate('/')
         }
 
-    }, [isSuccess])
+    }, [isSuccess,data,dispatch,navigate])
 
 
 

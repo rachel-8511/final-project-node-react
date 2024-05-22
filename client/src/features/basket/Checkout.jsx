@@ -4,7 +4,7 @@ import { Button } from 'primereact/button';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {useNavigate } from 'react-router-dom';
-import { useCleaningBasketMutation, useUpdateUserMutation } from "../user/userApiSlice";
+import { useCleaningBasketMutation } from "../user/userApiSlice";
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import Address from "./Address";
 import { useAddOrderMutation } from "../order/orderApiSlice";
@@ -36,7 +36,7 @@ const Checkout = () => {
             } 
         }
   
-    }, [isSuccess,cleaningBasketIsSuccess])
+    }, [isSuccess,cleaningBasketIsSuccess,cleaningBasket, data, dispatch, flag, navigate,user._id])
 
     return (
         <>
@@ -44,13 +44,13 @@ const Checkout = () => {
         <div className="card" style={{marginTop:'100px',width:'80%',marginLeft:'10%'}}>
             <Accordion activeIndex={0}>
                 <AccordionTab header="שיטת משלוח">
-                    <p className="m-0">
+                    <div className="m-0">
                         {user.basket.payment >= 200 ? <h3> זכאי למשלוח חינם בקניה מעל  200₪</h3> : <h3> עלות המשלוח 30₪</h3>}
-                    </p>
+                    </div>
                 </AccordionTab>
                 <AccordionTab header="פרטי משלוח">
 
-                    <p className="m-0">
+                    <div className="m-0">
                         {user.defaultAddress ?
                             <><div style={{marginLeft:'20%', border: "5px solid #C08F48", padding: "", width: "60%",textAlign:'center'  }}>
                                 <h4>{user.defaultAddress.firstName} {user.defaultAddress.lastName}</h4>
@@ -63,13 +63,13 @@ const Checkout = () => {
 
                             </> :
                             <><Address /></>}
-                    </p>
+                    </div>
                 </AccordionTab>
                 <AccordionTab header="שיטת תשלום" >
-                    <p className="m-0">
+                    <div className="m-0">
                         {user.basket.payment>=200?<h3>₪{user.basket.payment} לתשלום </h3>:<h3>₪{user.basket.payment+30} לתשלום </h3>}
                         <Button label="לתשלום" style={{backgroundColor:'#C08F48',border:'black'}} onClick={() => addOrder({address:sessionStorage.getItem('address')?JSON.parse(sessionStorage.getItem('address')):user.defaultAddress})} />
-                    </p>
+                    </div>
                 </AccordionTab>
             </Accordion>
             {isError&&<Error error={error.data.message}/>}   
