@@ -91,7 +91,7 @@ const Product = ({setVisibleRight}) => {
     return (
         <>
             <br></br>
-            <div className="" style={{ direction: 'rtl', marginTop: '150px', width: '70%', marginLeft: '5%' }}>
+            <div style={{ direction: 'rtl', marginTop: '150px', width: '70%', marginLeft: '5%' ,minHeight:'57vh'}}>
                 <div className="flex flex-column md:flex-row" >
                     <div className="flex-column md:flex-row" style={{ maxWidth: '500px', minWidth: '300px' }}>
                         <h1><b>{product.name}</b></h1>

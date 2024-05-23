@@ -152,7 +152,8 @@ const Orders = () => {
     return (
         <>
             <br></br>
-            <div className="card" style={{ marginTop: "100px" }}>
+            <div style={{ minHeight:'63vh'}}>
+            <div className="card" style={{ marginTop: "100px"}}>
                 <Toast ref={toast} />
                 <DataTable value={orders} expandedRows={expandedRows} onRowToggle={(e) => { setExpandedRows(e.data) }}
                     rowExpansionTemplate={rowExpansionTemplate}
@@ -176,7 +177,7 @@ const Orders = () => {
                         )}
                     </div>
                 </Dialog>
-            </div>
+            </div></div>
         </>
     )
 }

@@ -27,7 +27,6 @@ const FullBasket = ({ setToCheckout }) => {
     const { data: allproducts, isLoading, isSuccess } = useGetProductsQuery()
     const [deleteProduct, { data: dt, isSuccess: deleteProductIsSuccess }] = useDeleteProductMutation()
     const [updateProductQuantity, { data, isSuccess: updateProductQuantityIsuccess }] = useUpdateProductQuantityMutation()
-    const [a,seta]=useState(false)
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -42,9 +41,6 @@ const FullBasket = ({ setToCheckout }) => {
         if (deleteProductIsSuccess) {
            dispatch(setToken(dt))
         }
-
-       
-
     }, [isSuccess, deleteProductIsSuccess, updateProductQuantityIsuccess, data, dt, dispatch, full_basket]);
 
     if (isLoading) return <IsLoading />;
@@ -184,7 +180,7 @@ const FullBasket = ({ setToCheckout }) => {
     return (
         <>
             <br></br>
-            <div style={{ marginTop: '100px' }}>
+            <div style={{ marginTop: '100px',minHeight:'63vh' }}>
                 {basket.products.length === 0 ?
                     <>
                         <br></br><br></br><br></br>

@@ -41,6 +41,7 @@ const Checkout = () => {
     return (
         <>
         <br></br>
+        <div style={{minHeight:'65vh'}}>
         <div className="card" style={{marginTop:'100px',width:'80%',marginLeft:'10%'}}>
             <Accordion activeIndex={0}>
                 <AccordionTab header="שיטת משלוח">
@@ -74,7 +75,7 @@ const Checkout = () => {
             </Accordion>
             {isError&&<Error error={error.data.message}/>}   
 
-        </div>
+        </div></div>
         </>
 
 

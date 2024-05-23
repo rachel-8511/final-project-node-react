@@ -87,7 +87,7 @@ export default function LoginDemo({ setToCheckout, toCheckout }) {
     return (
         <>
             <br></br>
-            <div className="card" style={{ marginTop: "150px", width: '85%', marginLeft: '7.5%' }}>
+            <div  style={{ marginTop: "150px", width: '85%', marginLeft: '7.5%',minHeight:'57vh' }}>
                 <div className="flex flex-column md:flex-row">
                     <div className="w-full md:w-5 flex flex-column align-items-center justify-content-center gap-3 py-5" >
                         <div className="flex flex-wrap justify-content-center align-items-center gap-2">
@@ -145,5 +145,3 @@ export default function LoginDemo({ setToCheckout, toCheckout }) {
         </>
     )
 }
-
-

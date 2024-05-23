@@ -28,9 +28,6 @@ const Home=()=>{
             <div style={{ width: '100%', marginTop: '0px',bottom: '0', padding: '0px',border:'none' }}>
                 <img src={'h2.png'} width="100%"  alt=""/>
             </div>
-            <div style={{ width: '100%',marginTop: '0px', padding: '0px',border:'none' }}>
-                <img src={'h3.png'} width="100%"  alt=""/>
-            </div>
 
        </div>
    )

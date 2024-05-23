@@ -64,7 +64,7 @@ const Register = () => {
 
     return (<>
         <br></br>
-        <div style={{ marginTop: '200px' }}>
+        <div style={{ marginTop: '200px' ,minHeight:'53vh'}}>
             <form onSubmit={formik.handleSubmit} className="flex flex-wrap  gap-3 p-fluid" style={{ width: '50%', marginLeft: '25%' }}>
                 <h1 style={{ textAlign: 'center', width: '100%' }}>Register:</h1>
                 <div className="flex-auto">
